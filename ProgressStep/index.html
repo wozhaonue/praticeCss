@@ -1,0 +1,163 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Progress-step</title>
+    <style>
+      /* 通过设置css自定义变量来方便对两个经常使用的颜色进行赋值，也方便统一修改颜色 */
+      :root {
+        --line-border-fill: #3498db;
+        --line-border-empty: #e2e2e2;
+      }
+      /* 为每个颜色设置怪异盒模式 */
+      * {
+        box-sizing: border-box;
+      }
+      /* 设置子元素为flex的display，让子元素可以垂直和水平居中，高度设置为可视窗口高度的大小 */
+      body {
+        background-color: #ecfcff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+      }
+      /* 将其中的按钮和对应的步骤条居中 */
+      .container {
+        text-align: center;
+      }
+      /*  */
+      .progress-container {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 30px;
+        width: 350px;
+        max-width: 100%;
+      }
+      /* 本身元素设置position可以作为本身元素依附的伪元素的定位依据 */
+      .progress-container::before {
+        content: "";
+        background-color: var(--line-border-empty);
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        height: 4px;
+        width: 100%;
+        z-index: -1;
+      }
+      .progress {
+        background-color: var(--line-border-fill);
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        height: 4px;
+        width: 0%;
+        z-index: -1;
+        transition: 0.4s ease;
+      }
+      .circle {
+        background-color: #ffffff;
+        color: #e2e2e2;
+        border-radius: 50%;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid var(--line-border-empty);
+        transition: 0.4s ease;
+      }
+      .circle.active {
+        border-color: var(--line-border-fill);
+      }
+      .btn {
+        background-color: var(--line-border-fill);
+        color: #fff;
+        border: 0;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 8px 30px;
+        margin: 5px;
+        font-size: 14px;
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .btn:focus {
+        outline: 0;
+      }
+      .btn:disabled {
+        background-color: var(--line-border-empty);
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="progress-container">
+        <div class="progress" id="progress"></div>
+        <div class="circle active">1</div>
+        <div class="circle">2</div>
+        <div class="circle">3</div>
+        <div class="circle">4</div>
+      </div>
+      <button class="btn" id="prev">prev</button>
+      <button class="btn" id="next">next</button>
+    </div>
+    <script>
+      const progress = document.getElementById("progress");
+      const prev = document.getElementById("prev");
+      prev.disabled = true;
+      const next = document.getElementById("next");
+      const circles = document.querySelectorAll(".circle");
+      // 每次打开页面初始化一个当前的步骤数
+      let currentStep = 1;
+      const update = () => {
+        circles.forEach((item, index) => {
+          if (index < currentStep) {
+            item.classList.add("active");
+          } else {
+            item.classList.remove("active");
+          }
+        });
+        progress.style.width =
+          ((currentStep - 1) / (circles.length - 1)) * 100 +
+          "%";
+        if (currentStep === 1) {
+          prev.disabled = true;
+        } else {
+          prev.disabled = false;
+        }
+        if (currentStep === circles.length) {
+          next.disabled = true;
+        } else {
+          next.disabled = false;
+        }
+      };
+      prev.addEventListener("click", () => {
+        currentStep--;
+        if (currentStep < 1) {
+          currentStep = 1;
+        }
+        update();
+      });
+      next.addEventListener("click", () => {
+        currentStep++;
+        if (currentStep > circles.length) {
+          currentStep = circles.length;
+        }
+        update();
+      });
+    </script>
+  </body>
+</html>
