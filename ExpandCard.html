@@ -1,0 +1,137 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Expanding card</title>
+    <style>
+      /* 将所有元素设置为怪异盒模型，将内容区以外的地方也算进宽高中 */
+      * {
+        box-sizing: border-box;
+      }
+      /* 设置子元素纵向和横向上居中，溢出则进行不展示 */
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+      }
+      /* 设置宽度为90%的可见宽度 */
+      .container {
+        display: flex;
+        width: 90vw;
+      }
+      /* 背景放置中央，position设置为relative好让其中的h3设置为absolute来根据div.panel进行定位 */
+      /* flex为父容器剩余的空间该子元素占据的比例，通过调整点击的flex的大小来让点击的对象占据更多的父容器剩余空间可以实现点击展示图片的效果 */
+      /* transition实现某个属性的过度动画效果，可以设置过渡事件以及过渡的速度曲线 */
+      .panel {
+        background-size: cover;
+        background-position: center;
+        height: 80vh;
+        border-radius: 50px;
+        color: #fff;
+        cursor: pointer;
+        margin: 10px;
+        flex: 0.5;
+        position: relative;
+        transition: all 600ms ease-in;
+      }
+      /* 通过设置透明度以及transition对透明度opacity进行过渡来实现渐入的文字效果 */
+      .panel h3 {
+        font-size: 24px;
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        margin: 0;
+        opacity: 0;
+      }
+      .panel.active {
+        flex: 5;
+      }
+      .panel.active h3 {
+        opacity: 1;
+        transition: opacity 0.3s ease-in 0.4s;
+      }
+      /* 通过屏幕宽度的监视来实现更小屏幕的更好展示效果 */
+      @media (max-width: 600px) {
+        .container {
+          width: 100vw;
+        }
+        .panel:nth-of-type(4) {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div
+        class="panel active"
+        style="
+          background-image: url('/image/PixPin_2025-02-21_22-17-56.png');
+        "
+      >
+        <h3>beautiful</h3>
+      </div>
+      <div
+        class="panel"
+        style="
+          background-image: url('/image/PixPin_2025-02-21_22-18-19.png');
+        "
+      >
+        <h3>excelent</h3>
+      </div>
+      <div
+        class="panel"
+        style="
+          background-image: url('/image/PixPin_2025-02-21_22-18-30.png');
+        "
+      >
+        <h3>quiet</h3>
+      </div>
+      <div
+        class="panel"
+        style="
+          background-image: url('/image/PixPin_2025-02-21_22-19-16.png');
+        "
+      >
+        <h3>Be-careful</h3>
+      </div>
+      <div
+        class="panel"
+        style="
+          background-image: url('/image/PixPin_2025-02-27_17-44-40.png');
+        "
+      >
+        <h3>Be-careful</h3>
+      </div>
+      <div
+        class="panel"
+        style="
+          background-image: url('/image/PixPin_2025-05-21_18-18-10.png');
+        "
+      >
+        <h3>Be-careful</h3>
+      </div>
+    </div>
+    <script>
+      const panels = document.querySelectorAll(".panel");
+
+      panels.forEach((panel) => {
+        panel.addEventListener("click", () => {
+          panels.forEach((p) => {
+            p.classList.remove("active");
+          });
+          panel.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>
