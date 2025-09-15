@@ -1,0 +1,166 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>split-page</title>
+    <style>
+      /* 通过:root来自定义一些css变量 */
+      :root {
+        --left-bg-color: rgba(87, 84, 236, 0.7);
+        --right-bg-color: rgba(43, 43, 43, 0.8);
+        --left-btn-hover-color: rgba(87, 84, 236, 1);
+        --right-btn-hover-color: rgba(28, 122, 28, 1);
+        --hover-width: 75%;
+        --other-width: 25%;
+        --speed: 1100ms;
+      }
+      /* 设置所有页面中的子元素为怪异盒子模型 */
+      * {
+        box-sizing: border-box;
+      }
+      /* 一些基础设置来让子元素布局为flex，水平和垂直居中展示，margin为0来让body的margin不会干扰布局，height来捕捉全局高度 */
+      body {
+        display: flex;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        align-items: center;
+        justify-content: center;
+      }
+      /* 两个split页面需要占据整个页面，设置两个split为flex布局，方便实现宽度设置 */
+      .container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+      }
+      /* 通过父元素的relative来让子元素按钮和标题来找到可以依据的祖先元素 */
+      /* overflow让图片过大溢出而进行页面之外的隐藏从而不产生滚动条 */
+      .split {
+        position: relative;
+        width: 50%;
+        transition: all var(--speed) ease-in-out;
+        background-repeat: no-repeat;
+        background-size: cover;
+        overflow: hidden;
+      }
+      /* background-image可以通过linear-gradient来设置背景图像的蒙版颜色 */
+      .left {
+        background-image: linear-gradient(
+            var(--left-bg-color)
+          ),
+          url(./image/ps.jpg);
+      }
+      .right {
+        background-image: linear-gradient(
+            var(--right-bg-color)
+          ),
+          url(./image/xbox.jpg);
+      }
+      /* 通过white-space可以实现标题不自动换行 */
+      /* left移动50%相对父容器的宽度后只是左边缘居中，通过transform中
+      的translateX的移动50%可以向左移动自身宽度的50%从而达到水平居中 */
+      .title {
+        position: absolute;
+        top: 19%;
+        left: 50%;
+        color: #ffffff;
+        font-size: 4rem;
+        white-space: nowrap;
+        transform: translateX(-50%);
+        transition: all 1100ms ease-in-out;
+      }
+      /* text-transform设置一些字母大小写的配置 */
+      /*background-color设置transparent可以让背景颜色继承父元素的背景颜色，从而达到透明的效果  */
+      .btn {
+        background-color: transparent;
+        cursor: pointer;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        border: solid #fff 0.2rem;
+        font-size: 1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        top: 40%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 16rem;
+        padding: 1.5rem;
+        text-decoration: none;
+      }
+      .ps5-btn:hover {
+        border-color: var(--left-btn-hover-color);
+        background-color: var(--left-btn-hover-color);
+      }
+      .xbox-btn:hover {
+        border-color: var(--right-btn-hover-color);
+        background-color: var(--right-btn-hover-color);
+      }
+      /* 通过对父元素进行hover-left或者hover-right的add或remove并且
+      配合选择器的父子元素的联动，来实现父元素的类名添加而导致多个子元素样式的联动变化
+       */
+      .hover-left .left {
+        width: var(--hover-width);
+      }
+      .hover-left .left .title {
+        font-size: 7rem;
+      }
+      .hover-left .right {
+        width: var(--other-width);
+      }
+      .hover-left .right .title {
+        font-size: 3rem;
+      }
+      .hover-right .left {
+        width: var(--other-width);
+      }
+      .hover-right .left .title {
+        font-size: 3rem;
+      }
+      .hover-right .right .title {
+        font-size: 7rem;
+      }
+      .hover-right .right {
+        width: var(--hover-width);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left split">
+        <h1 class="title">Playstation 5</h1>
+        <button class="btn ps5-btn">BUY NOW</button>
+      </div>
+      <div class="right split">
+        <h1 class="title">XBox Series X</h1>
+        <button class="btn xbox-btn">BUY NOW</button>
+      </div>
+    </div>
+    <script>
+      const left = document.querySelector(".left");
+      const right = document.querySelector(".right");
+      const container =
+        document.querySelector(".container");
+      left.addEventListener("mouseenter", () => {
+        container.classList.add("hover-left");
+      });
+      left.addEventListener("mouseleave", () => {
+        container.classList.remove("hover-left");
+      });
+      right.addEventListener("mouseenter", () => {
+        container.classList.add("hover-right");
+      });
+      right.addEventListener("mouseleave", () => {
+        container.classList.remove("hover-right");
+      });
+    </script>
+  </body>
+</html>

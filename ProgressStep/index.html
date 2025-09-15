@@ -33,7 +33,7 @@
       .container {
         text-align: center;
       }
-      /*  */
+      /* 设置子元素为flex并让每个子元素的间距相同 */
       .progress-container {
         display: flex;
         justify-content: space-between;
@@ -43,6 +43,8 @@
         max-width: 100%;
       }
       /* 本身元素设置position可以作为本身元素依附的伪元素的定位依据 */
+      /* z-index让灰色的原本的步骤条可以被1，2，3，4的节点颜色覆盖 */
+      /* transform中用translateY是纵向上在容器中的调整 */
       .progress-container::before {
         content: "";
         background-color: var(--line-border-empty);
@@ -54,6 +56,7 @@
         width: 100%;
         z-index: -1;
       }
+      /* 设置一个蓝色的当前width为0%的步骤条，之后可以通过调整width，并通过动画来实现架步骤进行的效果 */
       .progress {
         background-color: var(--line-border-fill);
         position: absolute;
@@ -65,6 +68,7 @@
         z-index: -1;
         transition: 0.4s ease;
       }
+      /* 为每个节点设置样式 */
       .circle {
         background-color: #ffffff;
         color: #e2e2e2;
@@ -77,6 +81,7 @@
         border: 3px solid var(--line-border-empty);
         transition: 0.4s ease;
       }
+      /* 通过更改border-color的颜色并动画的过渡实现步骤跳跃的效果 */
       .circle.active {
         border-color: var(--line-border-fill);
       }
@@ -122,6 +127,7 @@
       const circles = document.querySelectorAll(".circle");
       // 每次打开页面初始化一个当前的步骤数
       let currentStep = 1;
+      // 状态管理和更新放在同一个函数中进行集中管理会更好
       const update = () => {
         circles.forEach((item, index) => {
           if (index < currentStep) {
