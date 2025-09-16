@@ -1,0 +1,200 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <style>
+      /* 设置自定义css变量 */
+      :root {
+        --bc: #a164df;
+        --box-color: rebeccapurple;
+      }
+      /* 所有元素设置为怪异盒模式 */
+      * {
+        box-sizing: border-box;
+      }
+      /* 依旧设置display为flex来让子元素居中，并且高度占据整个视口 */
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        height: 100vh;
+        overflow: hidden;
+      }
+      /* 设置flex-wrap为wrap来实现子元素宽度减小后的自动换行 */
+      .container {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+        background-color: var(--bc);
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      /* 设置按钮样式 */
+      .box {
+        background-color: var(--box-color);
+        color: #fff;
+        border-radius: 5px;
+        border: none;
+        font-size: 1.4rem;
+        margin: 2rem;
+        padding: 1.8rem 4rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      /* 放置时变大来展示交互效果 */
+      .box:hover {
+        opacity: 0.9;
+        transform: scale(1.02);
+      }
+      /* 点击时缩小来展示交互效果 */
+      .box:active {
+        transform: scale(0.98);
+      }
+      /* 播放动画时通过animation来展示动画 */
+      .box.playing {
+        background-color: #ff6b6b; /* 播放时变红色 */
+        animation: pulse 1s infinite; /* 脉冲动画 */
+      }
+      /* box-shadow: [水平偏移] [垂直偏移] [模糊半径] [扩散半径] [颜色]; */
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+        }
+      }
+    </style>
+    <title>Sound Board</title>
+  </head>
+  <body>
+    <audio src="./sound/applause.mp3"></audio>
+    <audio src="./sound/boo.mp3"></audio>
+    <audio src="./sound/gasp.mp3"></audio>
+    <audio src="./sound/wrong.mp3"></audio>
+    <audio src="./sound/victory.mp3"></audio>
+    <audio src="./sound/tada.mp3"></audio>
+    <div class="container">
+      <button class="box">applause</button>
+      <button class="box">boo</button>
+      <button class="box">gasp</button>
+      <button class="box">tada</button>
+      <button class="box">victory</button>
+      <button class="box">wrong</button>
+    </div>
+    <script>
+      /*
+      音乐播放和暂停逻辑
+      点击一个按钮：
+      1. 如果该播放按钮的音乐正在播放，则暂停音乐，修改按钮文本为暂停图案；
+      2. 如果其他按钮的音乐正在播放，则结束其他音乐，当前播放音乐时间归零，修改其他播放音乐对
+      应按钮的图标为原始文本；当前点击的按钮的音乐进行播放，修改按钮文本为播放图案；
+      3. 如果没有音乐正在播放，则将当前点击的按钮的音乐进行播放，修改按钮文本为播放图案；
+
+      当音乐结束时：
+      将当前结束播放的音乐对应的按钮修改文本为原始文本
+      */
+      // 通过类来方便管理和扩展
+      class SoundBoard {
+        constructor() {
+          this.buttons = document.querySelectorAll(".box");
+          this.audios = document.querySelectorAll("audio");
+          this.currentPlaying = null;
+          this.init();
+        }
+        init() {
+          this.buttons.forEach((button, index) => {
+            // 存储每个按钮的原始文本
+            button.dataset.originalText =
+              button.textContent;
+
+            // 为每个按钮添加点击事件对应的回调函数，在函数中处理点击的逻辑
+            button.addEventListener("click", () => {
+              this.handleButtonClick(button, index);
+            });
+
+            // 当音乐播放结束或者暂停的后续的操作
+            this.audios[index].addEventListener(
+              "ended",
+              () => {
+                this.resetButton(button);
+                this.currentPlaying = null;
+              }
+            );
+          });
+        }
+        // 点击逻辑处理
+        handleButtonClick(button, index) {
+          const audio = this.audios[index];
+          //点击后的操作可分为播放和暂停两类操作
+          if (
+            this.currentPlaying === audio &&
+            !audio.paused
+          ) {
+            this.pauseAudio(audio, button);
+          } else {
+            this.playAudio(audio, button);
+          }
+        }
+        // 播放音乐处理
+        playAudio(audio, button) {
+          // 停止播放其他音乐
+          this.stopAllAudio();
+          // 播放当前音频
+          audio.play();
+          this.currentPlaying = audio;
+          this.updateButtonState(button, "playing");
+        }
+        // 暂停音乐
+        pauseAudio(audio, button) {
+          audio.pause();
+          this.currentPlaying = null;
+          this.updateButtonState(button, "paused");
+        }
+        // 暂停所有音乐
+        stopAllAudio() {
+          this.audios.forEach((audio, index) => {
+            if (this.currentPlaying === audio) {
+              audio.pause();
+              audio.currentTime = 0; // 重置播放位置
+              this.resetButton(this.buttons[index]);
+            }
+          });
+          this.currentPlaying = null;
+        }
+        // 更新按钮文本状态
+        updateButtonState(button, state) {
+          const originalText = button.dataset.originalText;
+          switch (state) {
+            case "playing":
+              button.textContent = `${originalText} ⏸️`;
+              button.classList.add("playing");
+              break;
+            case "paused":
+              button.textContent = originalText;
+              button.classList.remove("playing");
+              break;
+          }
+        }
+        // 重置按钮状态
+        resetButton(button) {
+          button.textContent = button.dataset.originalText;
+          button.classList.remove("playing");
+        }
+      }
+      // 创建音板实例
+      const soundBoard = new SoundBoard();
+    </script>
+  </body>
+</html>
