@@ -1,0 +1,86 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>event-keycode</title>
+    <style>
+      /* 将页面中所有元素的宽高计算设置为怪异盒模型 */
+      * {
+        box-sizing: border-box;
+      }
+      /* 设置子元素为flex，居中，高度居中，文本水平居中，高度占据整个视口 */
+      /* vh单位 */
+      body {
+        background-color: #383838;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        overflow: hidden;
+        text-align: center;
+        height: 100vh;
+      }
+      /* 设置position为relative好让子元素设置为absolute根据父元素进行调整 */
+      /* display设置为inline-flex让 */
+      .key {
+        border: 1px solid #999;
+        background-color: #2b2b2b;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        display: inline-flex;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 20px;
+        flex-direction: column;
+        margin: 10px;
+        min-width: 150px;
+        color: white;
+        position: relative;
+      }
+      .key small {
+        position: absolute;
+        top: -32px;
+        left: 0;
+        text-align: center;
+        width: 100%;
+        color: #c4c4c4;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="insert">
+      <div class="key">
+        Press any key to get the keyCode
+      </div>
+    </div>
+    <script>
+      const insert = document.getElementById("insert");
+      console.log(insert);
+      // 浏览器通过监控窗口发生的一些特定事件来进行一些业务处理
+      window.addEventListener("keydown", (event) => {
+        insert.innerHTML = `
+  <div class="key">
+  ${event.key === " " ? "Space" : event.key} 
+  <small>event.key</small>
+</div>
+
+<div class="key">
+  ${event.keyCode}
+  <small>event.keyCode</small>
+</div>
+
+<div class="key">
+  ${event.code}
+  <small>event.code</small>
+</div>
+  `;
+      });
+    </script>
+  </body>
+</html>
