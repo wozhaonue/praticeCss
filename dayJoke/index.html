@@ -1,0 +1,113 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>day-joke</title>
+    <style>
+      /* 设置所有元素为怪异盒模型 */
+      * {
+        box-sizing: border-box;
+      }
+      /* 设置高度为一整个视窗，所有直接子元素为flex，将子元素放置在居中位置 */
+      body {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        background-color: #686de0;
+      }
+      /* 设置padding让子元素不过于靠近边框 */
+      /* 设置子元素为flex，方向为纵向 */
+      /* 边框设置圆角 */
+      /* 通过max-width让视窗的宽度减小时可以调整大小 */
+      .container {
+        padding: 64px;
+        width: 800px;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        border-radius: 8px;
+        max-width: 100%;
+      }
+      /* 设置各种变化的过渡效果 */
+      .btn {
+        width: 300px;
+        font-size: 1.15rem;
+        color: #fff;
+        height: 50px;
+        border: none;
+        background-color: #9f68e0;
+        transition: all 300ms ease;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1),
+          0 6px 6px rgba(0, 0, 0, 0.1);
+      }
+      /* 点击放大和透明度升高 */
+      .btn:hover {
+        opacity: 0.8;
+        transform: scale(1.02);
+      }
+      /* 点击缩小 */
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .comment {
+        color: #767676;
+        font-size: 1.2rem;
+      }
+      /* 设置行高为字体大小的1.4倍，看起来不会过于拥挤 */
+      .joke {
+        color: #5f4861;
+        margin: 48px 0;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="comment">Don't laugh challenge</div>
+      <h1 class="joke"
+        >Sore throats are a pain in the neck!</h1
+      >
+      <button class="btn">Get Another Joke</button>
+    </div>
+    <script>
+      // 获取其他的joke进行内容替换
+      const jokeContent = document.querySelector(".joke");
+      const getAnotherBtn = document.querySelector(".btn");
+
+      getAnotherBtn.addEventListener(
+        "click",
+        getAnotherJoke
+      );
+      getAnotherJoke();
+      async function getAnotherJoke() {
+        // headers设置获取的数据为json格式，方便转换获取
+        const config = {
+          headers: {
+            Accept: "application/json",
+          },
+        };
+
+        const res = await fetch(
+          "https://icanhazdadjoke.com",
+          config
+        );
+        const data = await res.json();
+        console.log(data.joke);
+
+        jokeContent.innerHTML = data.joke;
+      }
+    </script>
+  </body>
+</html>
